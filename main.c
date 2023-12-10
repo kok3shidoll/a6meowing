@@ -62,7 +62,7 @@ int main(int argc, char** argv)
         { NULL, 0, NULL, 0 }
     };
     
-    const char *opsStr = "hlvd";
+    const char *opsStr = "hlcd";
     
     while ((opt = getopt_long(argc, argv, opsStr, longopts, NULL)) > 0) {
         switch (opt) {
