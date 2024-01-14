@@ -6,8 +6,8 @@
 #define DFU_IPHONE7     (1 << 2)
 #define DFU_IPHONEX     (1 << 3)
 
-#define MEOW_CONTROL_TRANSFRE_TIME(c, brt, br, wv, wi, d, wl, t) usb_ctrl_transfer_with_time(c, brt, br, wv, wi, d, wl, t)
-#define MEOW_ASYNC_CONTROL_TRANSFRE_CANCEL(c, brt, br, wv, wi, d, wl, t) async_usb_ctrl_transfer_with_cancel(c, brt, br, wv, wi, d, wl, t)
+#define MEOW_CONTROL_TRANSFER_TIME(c, brt, br, wv, wi, d, wl, t) usb_ctrl_transfer_with_time(c, brt, br, wv, wi, d, wl, t)
+#define MEOW_ASYNC_CONTROL_TRANSFER_CANCEL(c, brt, br, wv, wi, d, wl, t) async_usb_ctrl_transfer_with_cancel(c, brt, br, wv, wi, d, wl, t)
 #define MEOW_SEND_CAT(c, b, s) send_data(c, b, s)
 #define MEOW_SEND_CAT_TIME(c, b, s, t) send_data_with_time(c, b, s, t)
 #define MEOW_RECONNECT(c, r, stg, f, srnm, sec) io_reconnect(c, r, stg, f, srnm, sec)
